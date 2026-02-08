@@ -12,12 +12,29 @@ const SearchScreen: React.FC = () => {
   const [query, setQuery] = React.useState('');
   const [results, setResults] = React.useState<SearchResult[]>([]);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   React.useEffect(() => {
     const timer = setTimeout(() => setResults(search(query)), 180);
     return () => clearTimeout(timer);
   }, [query]);
+
+  const renderHighlighted = (text: string) => {
+    if (!query) return <Text style={[styles.resultText, { color: colors.text, fontFamily: fonts.primary }]}>{text}</Text>;
+    const norm = text;
+    const idx = norm.indexOf(query);
+    if (idx === -1) return <Text style={[styles.resultText, { color: colors.text, fontFamily: fonts.primary }]}>{text}</Text>;
+    const before = text.slice(0, idx);
+    const match = text.slice(idx, idx + query.length);
+    const after = text.slice(idx + query.length);
+    return (
+      <Text style={[styles.resultText, { color: colors.text, fontFamily: fonts.primary }]}>
+        {before}
+        <Text style={{ fontFamily: fonts.primaryBold }}>{match}</Text>
+        {after}
+      </Text>
+    );
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -35,8 +52,8 @@ const SearchScreen: React.FC = () => {
               style={[styles.result, { borderBottomColor: colors.border }]}
               onPress={() => navigation.navigate('SurahView', { surahNumber: item.surah, ayahNumber: item.ayah })}
             >
-              <Text style={[styles.resultText, { color: colors.text }]}>{item.text}</Text>
-              <Text style={[styles.meta, { color: colors.muted }]}>
+              {renderHighlighted(item.text)}
+              <Text style={[styles.meta, { color: colors.muted, fontFamily: fonts.primary }]}>
                 سورة {item.surah} - آية {item.ayah}
               </Text>
             </TouchableOpacity>

@@ -25,3 +25,7 @@ export async function getLastRead(): Promise<Bookmark | null> {
 export async function saveLastRead(lastRead: Bookmark) {
   await AsyncStorage.setItem(LAST_READ_KEY, JSON.stringify(lastRead));
 }
+
+export async function clearAll() {
+  await AsyncStorage.multiRemove([FAVORITES_KEY, LAST_READ_KEY]);
+}

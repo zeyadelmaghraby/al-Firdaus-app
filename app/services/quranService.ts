@@ -1,21 +1,19 @@
-import quranData from '../data/quran.json';
+import fullQuran from 'quran-json/dist/quran.json';
 import { normalizeArabic } from '../utils/normalizeArabic';
 
 export interface Ayah {
-  number: number;
+  number: number; // global number across mushaf (not provided by dataset, we synthesize)
   numberInSurah: number;
-  juz?: number;
-  page?: number;
-  hizbQuarter?: number;
   text: string;
+  page?: number;
+  juz?: number;
 }
 
 export interface Surah {
   number: number;
   name: string;
-  englishName?: string;
-  englishNameTranslation?: string;
-  revelationType?: string;
+  transliteration?: string;
+  revelationType?: 'meccan' | 'medinan';
   ayahs: Ayah[];
 }
 
@@ -24,7 +22,6 @@ export interface SurahMeta {
   name: string;
   ayahCount: number;
   revelationType?: string;
-  pageStart?: number;
 }
 
 export interface SearchResult {
@@ -33,7 +30,18 @@ export interface SearchResult {
   text: string;
 }
 
-const surahs: Surah[] = (quranData as any).surahs || [];
+// Normalize dataset from quran-json: [{ id, name, transliteration, type, total_verses, verses: [{id,text}, ...] }]
+const surahs: Surah[] = (fullQuran as any[]).map((s) => ({
+  number: s.id,
+  name: s.name,
+  transliteration: s.transliteration,
+  revelationType: s.type,
+  ayahs: s.verses.map((v: any) => ({
+    number: v.id, // local within surah in dataset
+    numberInSurah: v.id,
+    text: v.text,
+  })),
+}));
 
 export function getSurahList(): SurahMeta[] {
   return surahs.map((s) => ({
@@ -41,7 +49,6 @@ export function getSurahList(): SurahMeta[] {
     name: s.name,
     ayahCount: s.ayahs.length,
     revelationType: s.revelationType,
-    pageStart: s.ayahs[0]?.page,
   }));
 }
 

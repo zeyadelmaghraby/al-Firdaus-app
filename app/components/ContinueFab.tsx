@@ -8,11 +8,11 @@ interface Props {
 }
 
 const ContinueFab: React.FC<Props> = ({ onPress }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <Pressable style={[styles.fab, { backgroundColor: colors.accent }]} onPress={onPress}>
       <Ionicons name="play" size={18} color="#fff" />
-      <Text style={styles.text}>تابع القراءة</Text>
+      <Text style={[styles.text, { fontFamily: fonts.primaryBold }]}>تابع القراءة</Text>
     </Pressable>
   );
 };

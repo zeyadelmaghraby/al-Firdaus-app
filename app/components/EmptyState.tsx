@@ -7,10 +7,10 @@ interface Props {
 }
 
 const EmptyState: React.FC<Props> = ({ message }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={styles.container}>
-      <Text style={[styles.text, { color: colors.muted }]}>{message}</Text>
+      <Text style={[styles.text, { color: colors.muted, fontFamily: fonts.primary }]}>{message}</Text>
     </View>
   );
 };

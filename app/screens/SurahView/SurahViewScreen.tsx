@@ -1,9 +1,8 @@
 import React, { useCallback, useMemo, useRef } from 'react';
-import { FlatList, ListRenderItemInfo, SafeAreaView, StyleSheet, Text, View, ViewToken } from 'react-native';
+import { FlatList, ListRenderItemInfo, SafeAreaView, StyleSheet, Text, View, ViewToken, Pressable } from 'react-native';
 import { RouteProp, useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../../navigation';
 import { getSurah, Ayah } from '../../services/quranService';
-import AyahRow from '../../components/AyahRow';
 import { useApp } from '../../context/AppContext';
 import ContinueFab from '../../components/ContinueFab';
 import { useTheme } from '../../theme';
@@ -13,7 +12,7 @@ type Route = RouteProp<RootStackParamList, 'SurahView'>;
 const SurahViewScreen: React.FC = () => {
   const { params } = useRoute<Route>();
   const { favorites, isFavorite, toggleFavorite, lastRead, setLastRead } = useApp();
-  const { colors } = useTheme();
+  const { colors, fonts, reader } = useTheme();
 
   const surah = useMemo(() => getSurah(params.surahNumber), [params.surahNumber]);
   const listRef = useRef<FlatList<Ayah>>(null);
@@ -31,16 +30,40 @@ const SurahViewScreen: React.FC = () => {
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 70 };
 
   const renderItem = useCallback(
-    ({ item }: ListRenderItemInfo<Ayah>) => (
-      <AyahRow
-        ayah={item}
-        surahNumber={params.surahNumber}
-        isFavorite={isFavorite({ surah: params.surahNumber, ayah: item.numberInSurah })}
-        onToggleFavorite={toggleFavorite}
-        highlight={lastRead?.surah === params.surahNumber && lastRead.ayah === item.numberInSurah}
-      />
-    ),
-    [params.surahNumber, isFavorite, toggleFavorite, lastRead],
+    ({ item }: ListRenderItemInfo<Ayah>) => {
+      const fav = isFavorite({ surah: params.surahNumber, ayah: item.numberInSurah });
+      const highlighted = lastRead?.surah === params.surahNumber && lastRead.ayah === item.numberInSurah;
+      return (
+        <View style={[styles.ayahBlock, highlighted && { backgroundColor: colors.border }]}>
+          <Text
+            style={[
+              styles.ayahText,
+              {
+                color: colors.text,
+                fontFamily: fonts.primary,
+                fontSize: reader.fontSize,
+                lineHeight: reader.lineHeight,
+                writingDirection: 'rtl',
+              },
+            ]}
+            selectable={false}
+          >
+            {item.text}{' '}
+            <Text style={[styles.badge, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}>
+              {item.numberInSurah}
+            </Text>
+          </Text>
+          <Pressable
+            hitSlop={10}
+            onPress={() => toggleFavorite({ surah: params.surahNumber, ayah: item.numberInSurah })}
+            style={styles.favButton}
+          >
+            <Text style={{ color: fav ? colors.accent : colors.muted, fontFamily: fonts.primary }}>{fav ? '★' : '☆'}</Text>
+          </Pressable>
+        </View>
+      );
+    },
+    [colors, fonts, isFavorite, lastRead, params.surahNumber, reader.fontSize, reader.lineHeight, toggleFavorite],
   );
 
   if (!surah) {
@@ -63,8 +86,14 @@ const SurahViewScreen: React.FC = () => {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
-        <Text style={[styles.title, { color: colors.text }]}>{surah.name}</Text>
-        <Text style={{ color: colors.muted }}>{surah.ayahs.length} آيات</Text>
+        <Text style={[styles.title, { color: colors.text, fontFamily: fonts.primaryBold }]}>{surah.name}</Text>
+        <Text style={{ color: colors.muted, fontFamily: fonts.primary }}>{surah.ayahs.length} آيات</Text>
+        <Pressable
+          style={[styles.markButton, { borderColor: colors.border }]}
+          onPress={() => setLastRead({ surah: surah.number, ayah: 1 })}
+        >
+          <Text style={{ color: colors.text, fontFamily: fonts.primary }}>تعيين كبداية</Text>
+        </Pressable>
       </View>
       <FlatList
         ref={listRef}
@@ -92,6 +121,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
+    gap: 6,
   },
   title: {
     fontSize: 20,
@@ -100,6 +130,36 @@ const styles = StyleSheet.create({
   },
   list: {
     paddingBottom: 90,
+  },
+  ayahBlock: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'transparent',
+    position: 'relative',
+  },
+  ayahText: {
+    textAlign: 'right',
+  },
+  badge: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    overflow: 'hidden',
+    fontSize: 12,
+  },
+  favButton: {
+    position: 'absolute',
+    left: 12,
+    top: 12,
+  },
+  markButton: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderRadius: 10,
   },
 });
 

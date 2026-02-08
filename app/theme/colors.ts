@@ -1,10 +1,10 @@
 export const lightColors = {
-  background: '#f8fafc',
+  background: '#f7f2e9', // parchment tint
   card: '#ffffff',
   text: '#0f172a',
   muted: '#475569',
   accent: '#0ea5e9',
-  border: '#e2e8f0',
+  border: '#e6dfd3',
 };
 
 export const darkColors = {

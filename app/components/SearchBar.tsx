@@ -10,12 +10,12 @@ interface Props {
 }
 
 const SearchBar: React.FC<Props> = ({ value, onChange, placeholder }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
   return (
     <View style={[styles.container, { backgroundColor: colors.card, borderColor: colors.border }]}>
       <Ionicons name="search" size={18} color={colors.muted} />
       <TextInput
-        style={[styles.input, { color: colors.text }]}
+        style={[styles.input, { color: colors.text, fontFamily: fonts.primary }]}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}

@@ -15,7 +15,7 @@ interface Props {
 }
 
 const AyahRow: React.FC<Props> = ({ ayah, surahNumber, isFavorite, onToggleFavorite, onLongPress, highlight }) => {
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   return (
     <Pressable
@@ -26,10 +26,10 @@ const AyahRow: React.FC<Props> = ({ ayah, surahNumber, isFavorite, onToggleFavor
       onLongPress={onLongPress}
     >
       <View style={styles.textContainer}>
-        <Text style={[styles.text, { color: colors.text }]} selectable={false}>
+        <Text style={[styles.text, { color: colors.text, fontFamily: fonts.primary }]} selectable={false}>
           {ayah.text}
         </Text>
-        <Text style={[styles.meta, { color: colors.muted }]}>({ayah.numberInSurah})</Text>
+        <Text style={[styles.meta, { color: colors.muted, fontFamily: fonts.primary }]}>({ayah.numberInSurah})</Text>
       </View>
       <Pressable
         hitSlop={8}
@@ -69,4 +69,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AyahRow;
+export default React.memo(AyahRow);

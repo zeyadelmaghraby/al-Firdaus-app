@@ -18,7 +18,7 @@ interface GroupedBookmark {
 const BookmarksScreen: React.FC = () => {
   const { favorites, toggleFavorite } = useApp();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { colors } = useTheme();
+  const { colors, fonts } = useTheme();
 
   const grouped = useMemo<GroupedBookmark[]>(() => {
     const map = new Map<number, GroupedBookmark>();
@@ -50,13 +50,13 @@ const BookmarksScreen: React.FC = () => {
         keyExtractor={(item) => item.surah.toString()}
         renderItem={({ item }) => (
           <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.title, { color: colors.text }]}>{item.surahName}</Text>
+            <Text style={[styles.title, { color: colors.text, fontFamily: fonts.primaryBold }]}>{item.surahName}</Text>
             {item.items.map((fav) => (
               <View key={fav.ayah} style={styles.row}>
                 <TouchableOpacity
                   onPress={() => navigation.navigate('SurahView', { surahNumber: item.surah, ayahNumber: fav.ayah })}
                 >
-                  <Text style={{ color: colors.text }}>آية {fav.ayah}</Text>
+                  <Text style={{ color: colors.text, fontFamily: fonts.primary }}>آية {fav.ayah}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => toggleFavorite({ surah: item.surah, ayah: fav.ayah })}>
                   <Ionicons name="trash-outline" size={18} color={colors.muted} />

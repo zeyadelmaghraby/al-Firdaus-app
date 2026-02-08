@@ -4,12 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../theme';
 
 const ThemeToggle: React.FC = () => {
-  const { mode, colors, toggleTheme } = useTheme();
+  const { mode, colors, toggleTheme, fonts } = useTheme();
   const isDark = mode === 'dark';
   return (
     <Pressable style={[styles.button, { borderColor: colors.border }]} onPress={toggleTheme}>
       <Ionicons name={isDark ? 'moon' : 'sunny'} size={18} color={colors.accent} />
-      <Text style={[styles.text, { color: colors.text }]}>{isDark ? 'الوضع الليلي' : 'الوضع النهاري'}</Text>
+      <Text style={[styles.text, { color: colors.text, fontFamily: fonts.primary }]}>{isDark ? 'الوضع الليلي' : 'الوضع النهاري'}</Text>
     </Pressable>
   );
 };
